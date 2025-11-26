@@ -1,0 +1,66 @@
+You are my Python developer. In this Repl, create a working Telegram bot for a small bubble tea shop.
+
+Technical requirements:
+- Language: Python.
+- Library: aiogram (latest stable version).
+- No webhooks, no FastAPI, no Flask. Use ONLY long polling with asyncio.
+- All logic must be in main.py.
+- Use a local SQLite database file called sales.db for storing sales.
+- Do NOT hardcode the bot token. Read it from an environment variable named TELEGRAM_TOKEN.
+
+Database:
+- Create a table "sales" with the following fields:
+  - id INTEGER PRIMARY KEY AUTOINCREMENT
+  - datetime TEXT (ISO format, e.g. "2025-11-26 13:45:00")
+  - drink_name TEXT
+  - category TEXT        -- e.g. "Milk & Tea", "Coffee", "Italian Soda", "Others"
+  - size TEXT            -- e.g. "Hot", "Iced", "Frappe"
+  - price REAL
+  - payment_type TEXT    -- "cash", "qr", "other"
+
+Bot features:
+1) /start
+   - Send a short welcome message and show an inline keyboard:
+     - "New sale"
+     - "Today report"
+
+2) New sale flow (use inline keyboards step by step):
+   - Step 1: choose category (Milk & Tea, Coffee, Italian Soda, Others).
+   - Step 2: choose drink inside that category (use a few example drinks, you can hardcode names in a Python dict).
+   - Step 3: choose size: Hot / Iced / Frappe (if a drink does not support a size, skip it).
+   - Step 4: automatically determine the price from a Python dict MENU[category][drink][size].
+   - Step 5: ask for payment type: cash / qr / other (inline buttons).
+   - After confirmation:
+     - write a row into the "sales" table;
+     - send a message "Sale saved ✅ Amount: XX ฿" to the user.
+
+3) Today report:
+   - Command: /report or inline button "Today report".
+   - Calculate:
+     - total number of sales for today;
+     - total amount (sum of price);
+   - Reply for example:
+     "📊 Today: 12 sales, total 850 ฿"
+   - Date for "today" is based on the server local date (no time zones needed).
+
+Code structure:
+- At start, check and create the sales.db and table if they do not exist.
+- Create a Python dict with a small example menu, for example:
+  MENU = {
+      "Milk & Tea": {
+          "Thai Tea": {"Hot": 25, "Iced": 30, "Frappe": 45},
+          "Green Tea": {"Hot": 25, "Iced": 30, "Frappe": 45}
+      },
+      "Coffee": {
+          "Nescafe": {"Hot": 25, "Iced": 35, "Frappe": 45}
+      }
+  }
+- Use aiogram's FSM or a simple in-memory dict to store the current sale state for each user during the New sale flow.
+
+What you must deliver:
+- Install aiogram using pip in this Repl.
+- Implement the full bot in main.py.
+- Add clear comments in the code explaining:
+  - where to set the TELEGRAM_TOKEN env variable in Replit;
+  - how to run the bot (which button to press in Replit).
+- Make sure the code runs without errors when I run "python main.py" in the Replit console.

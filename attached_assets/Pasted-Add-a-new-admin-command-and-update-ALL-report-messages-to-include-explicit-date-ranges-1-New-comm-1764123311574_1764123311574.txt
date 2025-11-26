@@ -1,0 +1,62 @@
+Add a new admin command and update ALL report messages to include explicit date ranges.
+
+1) New command: /week (รายงานรายสัปดาห์ / Weekly report)
+
+Requirements:
+- "This week" = current calendar week from Monday to Sunday.
+- Compute:
+  - start_date = Monday of the current week
+  - end_date   = Sunday of the current week
+- Select all sales where datetime is between start_date 00:00:00 and end_date 23:59:59.
+- Calculate:
+  - total number of sales in this week
+  - total sum of prices
+- Reply in bilingual format, including the exact date range.
+
+Example reply format:
+"📆 รายงานรายสัปดาห์ / Weekly report
+ช่วงวันที่: 2025-11-24 ถึง 2025-11-30 / Date range: 2025-11-24 to 2025-11-30
+ยอดขาย: 45 แก้ว / 45 cups
+ยอดรวม: 1,820 บาท / 1,820 THB"
+
+Also add a button to the admin menu:
+/admin inline keyboard must now include:
+- "📆 รายงานรายสัปดาห์ / Weekly Report" → triggers the /week logic
+
+2) Update ALL existing report commands to show explicit dates:
+
+a) /today
+- Must show the exact date used for the report.
+Example:
+"📊 รายงานวันนี้ / Today report
+วันที่: 2025-11-26
+ยอดขาย: 18 แก้ว / 18 cups
+ยอดรวม: 720 บาท / 720 THB"
+
+b) /month
+- Must show the exact date range of the current month:
+  - from the 1st day of this month
+  - to the last day included in the calculation (today or end of month, depending on your implementation).
+Example:
+"📅 รายงานประจำเดือนนี้ / This month report
+ช่วงวันที่: 2025-11-01 ถึง 2025-11-26 / Date range: 2025-11-01 to 2025-11-26
+ยอดขาย: 320 แก้ว / 320 cups
+ยอดรวม: 12,450 บาท / 12,450 THB"
+
+c) /alltime
+- Must show:
+  - earliest sale date in the database
+  - latest sale date in the database
+Example:
+"🗂 รายงานทั้งหมด / All-time report
+ช่วงวันที่: 2025-11-16 ถึง 2025-11-26 / Date range: 2025-11-16 to 2025-11-26
+ยอดขายรวม: 1,240 แก้ว / 1,240 cups
+ยอดรวมทั้งหมด: 48,300 บาท / 48,300 THB"
+
+3) Bilingual rule reminder:
+All newly added texts must follow the same bilingual pattern:
+- Thai first, English second.
+- Example keys:
+  - "📆 รายงานรายสัปดาห์ / Weekly report"
+  - "ช่วงวันที่: ... ถึง ... / Date range: ... to ..."
+  - "วันที่: ... / Date: ..."

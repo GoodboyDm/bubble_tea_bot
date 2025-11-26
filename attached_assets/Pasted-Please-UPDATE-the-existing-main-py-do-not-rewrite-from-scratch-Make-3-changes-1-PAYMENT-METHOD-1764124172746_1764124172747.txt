@@ -1,0 +1,120 @@
+Please UPDATE the existing main.py (do not rewrite from scratch). Make 3 changes:
+
+1) PAYMENT METHODS (only Cash + QR)
+-----------------------------------
+In get_payment_keyboard():
+- Leave ONLY:
+  - "💵 เงินสด / Cash"  → callback_data="pay:cash"
+  - "📱 คิวอาร์ / QR"   → callback_data="pay:qr"
+  - "❌ ยกเลิก / Cancel" → callback_data="cancel"
+- Remove the "Other" payment option from keyboard and from logic if it exists.
+- Keep confirmations bilingual (Thai + English).
+
+2) ADMIN: ONLY USER @dkokhel AND HIDE ADMIN BUTTON
+---------------------------------------------------
+Add helper near the top:
+
+    def is_admin_user(user: types.User) -> bool:
+        return (user.username or "").lower() == "dkokhel"
+
+Change get_main_keyboard to accept is_admin:
+
+    def get_main_keyboard(is_admin: bool):
+        rows = [
+            [InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")],
+            [InlineKeyboardButton(text="📊 รายงานวันนี้ / Today report", callback_data="today_report")],
+        ]
+        if is_admin:
+            rows.append([InlineKeyboardButton(text="👤 แอดมิน / Admin", callback_data="admin_menu")])
+        return InlineKeyboardMarkup(inline_keyboard=rows)
+
+Update all usages:
+- In cmd_start(message):
+    admin = is_admin_user(message.from_user)
+    await message.answer(welcome_text, reply_markup=get_main_keyboard(admin))
+- In cmd_report(message):
+    admin = is_admin_user(message.from_user)
+    await message.answer(report_text, reply_markup=get_main_keyboard(admin))
+- In callback_handler for:
+  - "today_report"
+  - "back_to_main"
+  Use:
+    admin = is_admin_user(callback.from_user)
+    reply_markup=get_main_keyboard(admin)
+
+Restrict admin functions:
+- In cmd_admin, cmd_week, cmd_month, cmd_alltime:
+  At top:
+    if not is_admin_user(message.from_user):
+        await message.answer("คำสั่งนี้สำหรับแอดมินเท่านั้น / This command is for admins only")
+        return
+
+- In callback_handler branches:
+  for "admin_menu", "week_report", "month_report", "alltime_report":
+    if not is_admin_user(callback.from_user):
+        await callback.answer("คำสั่งนี้สำหรับแอดมินเท่านั้น / This command is for admins only", show_alert=True)
+        return
+
+3) REPORT “DETAILS” BUTTON WITH FULL BREAKDOWN
+----------------------------------------------
+Add a helper function that returns sales grouped by drink_name for a given date range:
+
+    def get_sales_details(start_datetime: str, end_datetime: str):
+        # SELECT drink_name, COUNT(*), SUM(price)
+        # FROM sales
+        # WHERE datetime >= start_datetime AND datetime <= end_datetime
+        # GROUP BY drink_name
+        # ORDER BY SUM(price) DESC
+        # return list of (drink_name, count, total)
+
+For each report type (today, week, month, alltime) do two things:
+
+a) When sending the main report (for /report, /week, /month, /alltime
+   and for callback_data "today_report", "week_report", "month_report", "alltime_report"),
+   attach an extra inline button:
+
+   - Text: "📋 รายละเอียด / Details"
+   - callback_data:
+       - "details:today"
+       - "details:week"
+       - "details:month"
+       - "details:alltime"
+
+   Keep existing keyboards (main/admin) and just add this Details button as an extra row.
+
+b) In callback_handler, handle these new callbacks:
+
+- "details:today":
+    - Use get_today_report() to get today string (YYYY-MM-DD)
+    - start = "YYYY-MM-DD 00:00:00"
+    - end   = "YYYY-MM-DD 23:59:59"
+    - Call get_sales_details(start, end)
+    - Build bilingual text, example format:
+
+      "📋 รายละเอียดยอดขายวันนี้ / Today sales details
+       วันที่: 2025-11-26 / Date: 2025-11-26
+
+       ชาเย็น / Thai Tea: 5 แก้ว / 5 cups – 150 บาท / 150 THB
+       ชาเขียว / Green Tea: 3 แก้ว / 3 cups – 90 บาท / 90 THB
+       ..."
+
+    - Show the same keyboard as for the main report (main/admin + Details button).
+
+- "details:week":
+    - Use get_week_report() to get start_date, end_date
+    - start = start_date + " 00:00:00"
+    - end   = end_date + " 23:59:59"
+    - Call get_sales_details(start, end)
+    - Similar bilingual header: "📆 รายละเอียดรายสัปดาห์ / Weekly details ..."
+
+- "details:month":
+    - Use get_month_report() to get start_date, end_date
+    - Same as above.
+
+- "details:alltime":
+    - Use get_alltime_report() to get start_date, end_date
+    - If start_date == "N/A", reply with a bilingual message that there is no data.
+    - Otherwise, use start_date + " 00:00:00" and end_date + " 23:59:59".
+
+All new texts MUST stay bilingual (Thai first, English second), consistent with the current style.
+Do not change the MENU dict or existing prices.

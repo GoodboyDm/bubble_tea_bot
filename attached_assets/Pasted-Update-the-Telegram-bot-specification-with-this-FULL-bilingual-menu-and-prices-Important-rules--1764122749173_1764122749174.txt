@@ -1,0 +1,232 @@
+Update the Telegram bot specification with this FULL bilingual menu and prices.
+
+Important rules:
+- All texts that the bot sends to users (buttons, prompts, confirmations, reports) must be BILINGUAL:
+  Thai first, English second.
+  Example: "เลือกหมวดหมู่ / Choose category"
+           "ชาเย็น / Thai Tea"
+- Use the menu below EXACTLY as the source of truth.
+- Prices must match exactly. Hot Cocoa and Hot Ovaltine cost 30 THB (not 25).
+- Represent the menu in Python as a dict MENU, where each drink name is stored as:
+  "<Thai name> / <English name>"
+
+Use this exact structure:
+
+CATEGORIES:
+1) นม&ชา / Milk & Tea
+2) กาแฟ / Coffee
+3) อิตาเลียนโซดา / Italian Soda
+4) อื่นๆ / Others
+
+---------------------------
+1) นม&ชา / Milk & Tea
+All drinks have 3 sizes: Hot / Iced / Frappe.
+
+ชาเย็น / Thai Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชาเขียว / Green Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชาเขียวโออิชิ / Oishi Green Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชาดำ / Black Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชามะนาว / Lemon Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชาเขียวมะนาว / Green Tea Lemon
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+ชานมใต้หวัน / Taiwan Milk Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+โกโก้ / Cocoa
+  Hot  = 30   <-- IMPORTANT
+  Iced = 35
+  Frappe = 45
+
+โอวัลติน / Ovaltine Milk
+  Hot  = 30   <-- IMPORTANT
+  Iced = 35
+  Frappe = 45
+
+นมสด / Fresh Milk
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+นมชมพู / Pink Milk
+  Hot  = 25
+  Iced = 35
+  Frappe = 45
+
+เผือกหอม / Taro Milk Tea
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+แคนตาลูป / Cantaloupe Milk
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+---------------------------
+2) กาแฟ / Coffee
+All drinks have 3 sizes: Hot / Iced / Frappe.
+
+เนสกาแฟ / Nescafé
+  Hot  = 25
+  Iced = 35
+  Frappe = 45
+
+กาแฟโบราณ / Traditional Coffee
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+โอเลี้ยง / Thai Black Coffee
+  Hot  = 25
+  Iced = 30
+  Frappe = 45
+
+โอเลี้ยงยกล้อ / Iced Coffee Mix
+  Hot  = 25
+  Iced = 35
+  Frappe = 45
+
+มอคค่า / Mocha
+  Hot  = 25
+  Iced = 35
+  Frappe = 45
+
+---------------------------
+3) อิตาเลียนโซดา / Italian Soda
+These drinks have ONLY: Iced and Frappe (no Hot).
+
+บลูฮาวายโซดา / Blue Hawaii Soda
+  Iced   = 30
+  Frappe = 45
+
+บลูเบอร์รี่โซดา / Blueberry Soda
+  Iced   = 30
+  Frappe = 45
+
+สตรอเบอร์รี่โซดา / Strawberry Soda
+  Iced   = 30
+  Frappe = 45
+
+ลิ้นจี่โซดา / Lychee Soda
+  Iced   = 30
+  Frappe = 45
+
+สับปะรด / Pineapple Soda
+  Iced   = 30
+  Frappe = 45
+
+องุ่นโซดา / Grape Soda
+  Iced   = 30
+  Frappe = 45
+
+แอปเปิ้ลเขียวโซดา / Green Apple Soda
+  Iced   = 30
+  Frappe = 45
+
+กีวี่โซดา / Kiwi Soda
+  Iced   = 30
+  Frappe = 45
+
+เสาวรสโซดา / Passion Fruit Soda
+  Iced   = 30
+  Frappe = 45
+
+เขียวโซดา / Green Syrup Soda
+  Iced   = 30
+  Frappe = 45
+
+น้ำผึ้งมะนาวโซดา / Honey Lemon Soda
+  Iced   = 35
+  Frappe = 45
+
+บ้วยโซดา / Plum Soda
+  Iced   = 30
+  Frappe = 45
+
+---------------------------
+4) อื่นๆ / Others
+These drinks have ONLY: Iced and Frappe (no Hot).
+
+นมสดคาราเมล / Caramel Milk
+  Iced   = 35
+  Frappe = 45
+
+นมสดบราวชูก้า / Brown Sugar Milk
+  Iced   = 35
+  Frappe = 45
+
+ชากาแฟ / Coffee Tea
+  Iced   = 35
+  Frappe = 45
+
+ชาโกโก้ / Cocoa Milk Tea
+  Iced   = 35
+  Frappe = 45
+
+เฉาก๊วยนมสด / Grass Jelly Milk
+  Iced   = 35
+  Frappe = 45
+
+---------------------------
+
+Implementation details for you (Replit agent):
+
+1) Build a Python dict MENU exactly like this:
+
+MENU = {
+    "นม&ชา / Milk & Tea": {
+        "ชาเย็น / Thai Tea": {"Hot": 25, "Iced": 30, "Frappe": 45},
+        ...
+    },
+    "กาแฟ / Coffee": {
+        ...
+    },
+    "อิตาเลียนโซดา / Italian Soda": {
+        ...
+    },
+    "อื่นๆ / Others": {
+        ...
+    }
+}
+
+2) When the bot shows buttons for categories or drinks, it must use the full bilingual label:
+   example: "ชาเย็น / Thai Tea"
+
+3) When the user chooses a size, make sure:
+   - For Italian Soda and Others, offer only Iced and Frappe.
+   - Do NOT show "Hot" where it is not available.
+
+4) All bot messages, questions, and buttons must be in two languages (Thai first, English second), for example:
+   - "เลือกหมวดหมู่ / Choose category"
+   - "เลือกเครื่องดื่ม / Choose a drink"
+   - "เลือกขนาด / Choose size"
+   - "เลือกวิธีชำระเงิน / Choose payment method"
+   - "บันทึกการขายแล้ว ✅ ยอด: 45 บาท / Sale saved ✅ Amount: 45 THB"
+   - "📊 รายงานวันนี้ / Today report"
+
+Do not change the prices or names. Use this menu exactly.
