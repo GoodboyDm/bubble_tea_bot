@@ -1,5 +1,5 @@
 """
-Telegram Bot for Bubble Tea Shop
+Telegram Bot for Cameron Pattaya
 ==================================
 This bot helps manage sales for a small bubble tea shop.
 
@@ -23,6 +23,41 @@ from datetime import datetime
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+from typing import Union
+from aiogram import BaseMiddleware
+
+ALLOWED_USERS = {"dkokhel", "nangsihalath"}
+
+
+def is_allowed_user(user: types.User) -> bool:
+    return (user.username or "").lower() in ALLOWED_USERS
+
+
+class AccessMiddleware(BaseMiddleware):
+    async def __call__(
+        self,
+        handler,
+        event: Union[types.Message, types.CallbackQuery],
+        data: dict
+    ):
+        user = getattr(event, "from_user", None)
+
+        # если нет пользователя (какой-то системный апдейт) — пропускаем
+        if user is None:
+            return await handler(event, data)
+
+        if not is_allowed_user(user):
+            # сообщение
+            if isinstance(event, types.Message):
+                await event.answer("❌ Access denied")
+            # нажатия на кнопки
+            elif isinstance(event, types.CallbackQuery):
+                await event.answer("❌ Access denied", show_alert=True)
+            return
+
+        # всё ок — пускаем дальше
+        return await handler(event, data)
 
 # ============================================================================
 # ADMIN HELPER
@@ -563,15 +598,18 @@ async def callback_handler(callback: types.CallbackQuery):
     
     if data == "back_to_main":
         welcome_text = (
-            "🧋 ยินดีต้อนรับสู่บอทร้านชานมไข่มุก!\n"
-            "🧋 Welcome to Bubble Tea Shop Bot!\n\n"
+            "🧋 ยินดีต้อนรับสู่ร้าน Cameron Pattaya!\n"
+            "🧋 Welcome to Cameron Pattaya!\n\n"
             "ฉันจะช่วยคุณจัดการยอดขาย\n"
             "I'll help you manage your sales.\n\n"
             "เลือกตัวเลือกด้านล่าง:\n"
             "Choose an option below:"
         )
         admin = is_admin_user(callback.from_user)
-        await callback.message.edit_text(welcome_text, reply_markup=get_main_keyboard(admin))
+        await callback.message.edit_text(
+            welcome_text,
+            reply_markup=get_main_keyboard(admin)
+        )
         await callback.answer()
         return
     
@@ -827,6 +865,8 @@ async def main():
     # Create bot and dispatcher
     bot = Bot(token=token)
     dp = Dispatcher()
+    # 🔐 Глобальный доступ только для разрешённых пользователей
+    dp.update.middleware(AccessMiddleware())
     
     # Register handlers
     dp.message.register(cmd_start, Command("start"))
