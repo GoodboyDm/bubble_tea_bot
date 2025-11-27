@@ -81,18 +81,18 @@ MENU = {
         "เฉาก๊วยนมสด / Grass Jelly Milk": {"Iced": 35, "Frappe": 45}
     },
     "ท็อปปิ้ง / Toppings": {
-        "คาราเมล / Caramel": {"Addon": 5},
-        "บราวน์ชูการ์ / Brown Sugar": {"Addon": 5},
-        "เพิ่มไข่มุก / Extra Black Pearls": {"Addon": 5},
-        "เพิ่มบุก / Extra Fruit Jelly": {"Addon": 10},
-        "เพิ่มปั่น / Extra Frappe Scoop": {"Addon": 10},
-        "ครีมชีส / Cream Cheese": {"Addon": 15},
-        "วิปปิ้ง / Whipping Cream": {"Addon": 15},
-        "ฟรุตสลัด วุ้น / Fruit Salad Jelly": {"Addon": 10},
-        "บ้วยสามรส / Three-Flavor Plum": {"Addon": 20},
-        "มันหนึบ / Chewy Sweet Balls": {"Addon": 30},
-        "ถุงกระดาษ / Paper Bag": {"Addon": 40},
-        "แก้วถัง / Big Bucket Cup": {"Addon": 40}
+        "คาราเมล / Caramel": {"Add": 5},
+        "บราวน์ชูการ์ / Brown Sugar": {"Add": 5},
+        "เพิ่มไข่มุก / Extra Black Pearls": {"Add": 5},
+        "เพิ่มบุก / Extra Fruit Jelly": {"Add": 10},
+        "เพิ่มปั่น / Extra Frappe Scoop": {"Add": 10},
+        "ครีมชีส / Cream Cheese": {"Add": 15},
+        "วิปปิ้ง / Whipping Cream": {"Add": 15},
+        "ฟรุตสลัด วุ้น / Fruit Salad Jelly": {"Add": 10},
+        "บ้วยสามรส / Three-Flavor Plum": {"Add": 20},
+        "มันหนึบ / Chewy Sweet Balls": {"Add": 30},
+        "ถุงกระดาษ / Paper Bag": {"Add": 40},
+        "แก้วถัง / Big Bucket Cup": {"Add": 40}
     }
 }
 
