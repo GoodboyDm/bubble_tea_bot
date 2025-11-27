@@ -576,7 +576,7 @@ async def callback_handler(callback: types.CallbackQuery):
         )
         await callback.answer()
         return
-    )
+    
     admin = is_admin_user(callback.from_user)
     await callback.message.edit_text(welcome_text, reply_markup=get_main_keyboard(admin))
     await callback.answer()
