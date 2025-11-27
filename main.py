@@ -1,7 +1,7 @@
 """
 Telegram Bot for Cameron Pattaya
 ==================================
-This bot helps manage sales for a small bubble tea shop.
+This bot helps manage sales for a small bubble tea shop
 
 SETUP INSTRUCTIONS:
 1. Set your Telegram bot token:
