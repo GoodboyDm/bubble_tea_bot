@@ -20,7 +20,7 @@ import os
 import asyncio
 import sqlite3
 from datetime import datetime
-from aiogram import Bot, Dispatcher, types, F
+from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -62,7 +62,7 @@ MENU = {
         "บลูฮาวายโซดา / Blue Hawaii Soda": {"Iced": 30, "Frappe": 45},
         "บลูเบอร์รี่โซดา / Blueberry Soda": {"Iced": 30, "Frappe": 45},
         "สตรอเบอร์รี่โซดา / Strawberry Soda": {"Iced": 30, "Frappe": 45},
-        "มะม่วงโซดา / Mango Soda": {"Iced": 30, "Frappe": 45},   
+        "มะม่วงโซดา / Mango Soda": {"Iced": 30, "Frappe": 45},
         "ลิ้นจี่โซดา / Lychee Soda": {"Iced": 30, "Frappe": 45},
         "สับปะรด / Pineapple Soda": {"Iced": 30, "Frappe": 45},
         "องุ่นโซดา / Grape Soda": {"Iced": 30, "Frappe": 45},
@@ -174,7 +174,6 @@ def get_week_report():
 
 def get_month_report():
     """Get current month's sales report."""
-    from datetime import timedelta
     conn = sqlite3.connect('sales.db')
     cursor = conn.cursor()
     
@@ -239,7 +238,6 @@ def get_sales_details(start_datetime: str, end_datetime: str):
 # ============================================================================
 # USER SESSION STORAGE
 # ============================================================================
-# Simple in-memory storage for user sale sessions
 user_sessions = {}
 
 def get_session(user_id):
@@ -285,7 +283,7 @@ def get_category_keyboard():
         buttons.append([
             InlineKeyboardButton(
                 text=category,
-                callback_data=f"cat:{idx}"   # короткий ID
+                callback_data=f"cat:{idx}"
             )
         ])
     buttons.append([InlineKeyboardButton(text="❌ ยกเลิก / Cancel", callback_data="cancel")])
@@ -300,7 +298,7 @@ def get_drink_keyboard(category):
             buttons.append([
                 InlineKeyboardButton(
                     text=drink,
-                    callback_data=f"drink:{idx}"   # короткий ID
+                    callback_data=f"drink:{idx}"
                 )
             ])
     buttons.append([InlineKeyboardButton(text="🔙 กลับ / Back", callback_data="back_to_category")])
@@ -316,13 +314,12 @@ def get_size_keyboard(category, drink):
             buttons.append([
                 InlineKeyboardButton(
                     text=size,
-                    callback_data=f"size:{idx}"   # короткий ID
+                    callback_data=f"size:{idx}"
                 )
             ])
     buttons.append([InlineKeyboardButton(text="🔙 กลับ / Back", callback_data="back_to_drink")])
     buttons.append([InlineKeyboardButton(text="❌ ยกเลิก / Cancel", callback_data="cancel")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
-
 
 def get_payment_keyboard():
     """Create keyboard for payment type selection."""
@@ -336,17 +333,16 @@ def get_payment_keyboard():
 # ============================================================================
 # BOT HANDLERS
 # ============================================================================
-
 async def cmd_start(message: types.Message):
     """Handle /start command."""
     welcome_text = (
-    "🧋 ยินดีต้อนรับสู่ร้าน Cameron Pattaya!\n"
-    "🧋 Welcome to Cameron Pattaya!\n\n"
-    "ฉันจะช่วยคุณจัดการยอดขาย\n"
-    "I'll help you manage your sales.\n\n"
-    "เลือกตัวเลือกด้านล่าง:\n"
-    "Choose an option below:"
-)
+        "🧋 ยินดีต้อนรับสู่ร้าน Cameron Pattaya!\n"
+        "🧋 Welcome to Cameron Pattaya!\n\n"
+        "ฉันจะช่วยคุณจัดการยอดขาย\n"
+        "I'll help you manage your sales.\n\n"
+        "เลือกตัวเลือกด้านล่าง:\n"
+        "Choose an option below:"
+    )
     admin = is_admin_user(message.from_user)
     await message.answer(welcome_text, reply_markup=get_main_keyboard(admin))
 
@@ -361,14 +357,11 @@ async def cmd_report(message: types.Message):
     )
     admin = is_admin_user(message.from_user)
     
-    # Add Details button
     keyboard_rows = []
     keyboard_rows.append([InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:today")])
+    keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
     if admin:
-        keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
         keyboard_rows.append([InlineKeyboardButton(text="👤 แอดมิน / Admin", callback_data="admin_menu")])
-    else:
-        keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
     
     await message.answer(report_text, reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard_rows))
 
@@ -386,7 +379,6 @@ async def cmd_week(message: types.Message):
         f"ยอดรวม: {total:,.2f} บาท / {total:,.2f} THB"
     )
     
-    # Add Details button
     keyboard_rows = list(get_admin_keyboard().inline_keyboard)
     keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:week")])
     
@@ -406,7 +398,6 @@ async def cmd_month(message: types.Message):
         f"ยอดรวม: {total:,.2f} บาท / {total:,.2f} THB"
     )
     
-    # Add Details button
     keyboard_rows = list(get_admin_keyboard().inline_keyboard)
     keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:month")])
     
@@ -426,7 +417,6 @@ async def cmd_alltime(message: types.Message):
         f"ยอดรวมทั้งหมด: {total:,.2f} บาท / {total:,.2f} THB"
     )
     
-    # Add Details button
     keyboard_rows = list(get_admin_keyboard().inline_keyboard)
     keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:alltime")])
     
@@ -445,6 +435,9 @@ async def cmd_admin(message: types.Message):
     )
     await message.answer(admin_text, reply_markup=get_admin_keyboard())
 
+# ============================================================================
+# CALLBACK HANDLER
+# ============================================================================
 async def callback_handler(callback: types.CallbackQuery):
     """Handle all inline keyboard callbacks."""
     user_id = callback.from_user.id
@@ -471,14 +464,11 @@ async def callback_handler(callback: types.CallbackQuery):
         )
         admin = is_admin_user(callback.from_user)
         
-        # Add Details button
         keyboard_rows = []
         keyboard_rows.append([InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:today")])
+        keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
         if admin:
-            keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
             keyboard_rows.append([InlineKeyboardButton(text="👤 แอดมิน / Admin", callback_data="admin_menu")])
-        else:
-            keyboard_rows.append([InlineKeyboardButton(text="🆕 ขายใหม่ / New sale", callback_data="new_sale")])
         
         await callback.message.edit_text(report_text, reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard_rows))
         await callback.answer()
@@ -497,7 +487,6 @@ async def callback_handler(callback: types.CallbackQuery):
             f"ยอดรวม: {total:,.2f} บาท / {total:,.2f} THB"
         )
         
-        # Add Details button
         keyboard_rows = list(get_admin_keyboard().inline_keyboard)
         keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:week")])
         
@@ -518,7 +507,6 @@ async def callback_handler(callback: types.CallbackQuery):
             f"ยอดรวม: {total:,.2f} บาท / {total:,.2f} THB"
         )
         
-        # Add Details button
         keyboard_rows = list(get_admin_keyboard().inline_keyboard)
         keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:month")])
         
@@ -526,7 +514,7 @@ async def callback_handler(callback: types.CallbackQuery):
         await callback.answer()
         return
     
-        if data == "alltime_report":
+    if data == "alltime_report":
         if not is_admin_user(callback.from_user):
             await callback.answer("คำสั่งนี้สำหรับแอดมินเท่านั้น / This command is for admins only", show_alert=True)
             return
@@ -576,11 +564,6 @@ async def callback_handler(callback: types.CallbackQuery):
         )
         await callback.answer()
         return
-    
-    admin = is_admin_user(callback.from_user)
-    await callback.message.edit_text(welcome_text, reply_markup=get_main_keyboard(admin))
-    await callback.answer()
-    return
     
     if data == "cancel":
         clear_session(user_id)
@@ -771,16 +754,11 @@ async def callback_handler(callback: types.CallbackQuery):
         size = session.get('size')
         price = session.get('price')
 
-        # Save to database
         save_sale(drink, category, size, price, payment_type)
-
-        # Clear session
         clear_session(user_id)
 
-        # Определяем, админ ли пользователь
         admin = is_admin_user(callback.from_user)
 
-        # Send confirmation
         await callback.message.edit_text(
             f"✅ บันทึกการขายแล้ว!\n✅ Sale saved!\n\n"
             f"เครื่องดื่ม / Drink: {drink}\n"
@@ -792,7 +770,7 @@ async def callback_handler(callback: types.CallbackQuery):
         await callback.answer("✅ บันทึกแล้ว / Saved!")
         return
     
-    # ========== NAVIGATION ==========
+    # ========== NAVIGATION BACK ==========
     if data == "back_to_category":
         await callback.message.edit_text(
             "🆕 ขายใหม่ / New Sale\n\nขั้นที่ 1: เลือกหมวดหมู่\nStep 1: Choose category:",
@@ -813,10 +791,8 @@ async def callback_handler(callback: types.CallbackQuery):
 # ============================================================================
 # MAIN FUNCTION
 # ============================================================================
-
 async def main():
     """Main function to run the bot."""
-    # Get bot token from environment variable
     token = os.getenv('TELEGRAM_TOKEN')
     
     if not token:
@@ -828,14 +804,11 @@ async def main():
         print("   Value: your bot token from @BotFather")
         return
     
-    # Initialize database
     init_database()
     
-    # Create bot and dispatcher
     bot = Bot(token=token)
     dp = Dispatcher()
     
-    # Register handlers
     dp.message.register(cmd_start, Command("start"))
     dp.message.register(cmd_report, Command("report"))
     dp.message.register(cmd_week, Command("week"))
@@ -847,7 +820,6 @@ async def main():
     print("🚀 Bot started! Press Ctrl+C to stop.")
     print("📱 Go to your Telegram bot and type /start")
     
-    # Start polling
     try:
         await dp.start_polling(bot)
     finally:
