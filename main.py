@@ -79,7 +79,7 @@ MENU = {
         "ชากาแฟ / Coffee Tea": {"Iced": 35, "Frappe": 45},
         "ชาโกโก้ / Cocoa Milk Tea": {"Iced": 35, "Frappe": 45},
         "เฉาก๊วยนมสด / Grass Jelly Milk": {"Iced": 35, "Frappe": 45}
-    }
+    },
     "ท็อปปิ้ง / Toppings": {
         "คาราเมล / Caramel": {"Addon": 5},
         "บราวน์ชูการ์ / Brown Sugar": {"Addon": 5},
