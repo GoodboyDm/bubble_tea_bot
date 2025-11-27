@@ -136,7 +136,7 @@ MENU = {
 # ============================================================================
 def init_database():
     """Initialize SQLite database and create sales table if not exists."""
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sales (
@@ -155,7 +155,7 @@ def init_database():
 
 def save_sale(drink_name, category, size, price, payment_type):
     """Save a sale record to the database."""
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute('''
@@ -167,7 +167,7 @@ def save_sale(drink_name, category, size, price, payment_type):
 
 def get_today_report():
     """Get today's sales report with date."""
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     today = datetime.now().strftime("%Y-%m-%d")
     cursor.execute('''
@@ -185,7 +185,7 @@ def get_today_report():
 def get_week_report():
     """Get current week's sales report (Monday to Sunday)."""
     from datetime import timedelta
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
     today = datetime.now()
@@ -210,7 +210,7 @@ def get_week_report():
 def get_month_report():
     """Get current month's sales report."""
     from datetime import timedelta
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
     today = datetime.now()
@@ -231,7 +231,7 @@ def get_month_report():
 
 def get_alltime_report():
     """Get all-time sales report with date range."""
-    conn = sqlite3.connect('sales.db')
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
     cursor.execute('''
