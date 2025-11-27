@@ -526,7 +526,7 @@ async def callback_handler(callback: types.CallbackQuery):
         await callback.answer()
         return
     
-    if data == "alltime_report":
+        if data == "alltime_report":
         if not is_admin_user(callback.from_user):
             await callback.answer("คำสั่งนี้สำหรับแอดมินเท่านั้น / This command is for admins only", show_alert=True)
             return
@@ -539,14 +539,13 @@ async def callback_handler(callback: types.CallbackQuery):
             f"ยอดรวมทั้งหมด: {total:,.2f} บาท / {total:,.2f} THB"
         )
         
-        # Add Details button
         keyboard_rows = list(get_admin_keyboard().inline_keyboard)
         keyboard_rows.insert(0, [InlineKeyboardButton(text="📋 รายละเอียด / Details", callback_data="details:alltime")])
         
         await callback.message.edit_text(report_text, reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard_rows))
         await callback.answer()
         return
-    
+
     if data == "admin_menu":
         if not is_admin_user(callback.from_user):
             await callback.answer("คำสั่งนี้สำหรับแอดมินเท่านั้น / This command is for admins only", show_alert=True)
@@ -560,15 +559,23 @@ async def callback_handler(callback: types.CallbackQuery):
         await callback.message.edit_text(admin_text, reply_markup=get_admin_keyboard())
         await callback.answer()
         return
-    
-if data == "back_to_main":
-    welcome_text = (
-        "🧋 ยินดีต้อนรับสู่ร้าน Cameron Pattaya!\n"
-        "🧋 Welcome to Cameron Pattaya!\n\n"
-        "ฉันจะช่วยคุณจัดการยอดขาย\n"
-        "I'll help you manage your sales.\n\n"
-        "เลือกตัวเลือกด้านล่าง:\n"
-        "Choose an option below:"
+
+    if data == "back_to_main":
+        welcome_text = (
+            "🧋 ยินดีต้อนรับสู่ร้าน Cameron Pattaya!\n"
+            "🧋 Welcome to Cameron Pattaya!\n\n"
+            "ฉันจะช่วยคุณจัดการยอดขาย\n"
+            "I'll help you manage your sales.\n\n"
+            "เลือกตัวเลือกด้านล่าง:\n"
+            "Choose an option below:"
+        )
+        admin = is_admin_user(callback.from_user)
+        await callback.message.edit_text(
+            welcome_text,
+            reply_markup=get_main_keyboard(admin)
+        )
+        await callback.answer()
+        return
     )
     admin = is_admin_user(callback.from_user)
     await callback.message.edit_text(welcome_text, reply_markup=get_main_keyboard(admin))
