@@ -166,24 +166,29 @@ def save_sale(drink_name, category, size, price, payment_type):
     conn.close()
 
 def get_today_report():
-    """Get today's sales report with date."""
+    """Get today's sales report with date (exclude toppings from cup count)."""
     conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     today = datetime.now().strftime("%Y-%m-%d")
+
     cursor.execute('''
-        SELECT COUNT(*), SUM(price)
+        SELECT 
+            SUM(CASE WHEN category != 'ท็อปปิ้ง / Toppings' THEN 1 ELSE 0 END) AS cups,
+            SUM(price) AS total_price
         FROM sales
         WHERE datetime LIKE ?
     ''', (f"{today}%",))
+
     result = cursor.fetchone()
     conn.close()
     
-    count = result[0] if result[0] else 0
+    cups = result[0] if result[0] else 0
     total = result[1] if result[1] else 0
-    return today, count, total
+    
+    return today, cups, total
 
 def get_week_report():
-    """Get current week's sales report (Monday to Sunday)."""
+    """Get current week's sales report (Monday to Sunday, exclude toppings from cup count)."""
     from datetime import timedelta
     conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
@@ -196,20 +201,22 @@ def get_week_report():
     end_date = sunday.strftime("%Y-%m-%d")
     
     cursor.execute('''
-        SELECT COUNT(*), SUM(price)
+        SELECT 
+            SUM(CASE WHEN category != 'ท็อปปิ้ง / Toppings' THEN 1 ELSE 0 END) AS cups,
+            SUM(price) AS total_price
         FROM sales
         WHERE datetime >= ? AND datetime <= ?
     ''', (f"{start_date} 00:00:00", f"{end_date} 23:59:59"))
+    
     result = cursor.fetchone()
     conn.close()
     
-    count = result[0] if result[0] else 0
+    cups = result[0] if result[0] else 0
     total = result[1] if result[1] else 0
-    return start_date, end_date, count, total
+    return start_date, end_date, cups, total
 
 def get_month_report():
-    """Get current month's sales report."""
-    from datetime import timedelta
+    """Get current month's sales report (exclude toppings from cup count)."""
     conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
@@ -218,52 +225,65 @@ def get_month_report():
     end_date = today.strftime("%Y-%m-%d")
     
     cursor.execute('''
-        SELECT COUNT(*), SUM(price)
+        SELECT 
+            SUM(CASE WHEN category != 'ท็อปปิ้ง / Toppings' THEN 1 ELSE 0 END) AS cups,
+            SUM(price) AS total_price
         FROM sales
         WHERE datetime >= ? AND datetime <= ?
     ''', (f"{start_date} 00:00:00", f"{end_date} 23:59:59"))
+    
     result = cursor.fetchone()
     conn.close()
     
-    count = result[0] if result[0] else 0
+    cups = result[0] if result[0] else 0
     total = result[1] if result[1] else 0
-    return start_date, end_date, count, total
+    return start_date, end_date, cups, total
 
 def get_alltime_report():
-    """Get all-time sales report with date range."""
+    """Get all-time sales report (exclude toppings from cup count)."""
     conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT COUNT(*), SUM(price), MIN(datetime), MAX(datetime)
+        SELECT 
+            SUM(CASE WHEN category != 'ท็อปปิ้ง / Toppings' THEN 1 ELSE 0 END) AS cups,
+            SUM(price) AS total_price,
+            MIN(datetime),
+            MAX(datetime)
         FROM sales
     ''')
+    
     result = cursor.fetchone()
     conn.close()
     
-    count = result[0] if result[0] else 0
+    cups = result[0] if result[0] else 0
     total = result[1] if result[1] else 0
     
     if result[2] and result[3]:
         start_date = result[2][:10]
-        end_date = result[3][:10]
+        end_date   = result[3][:10]
     else:
         start_date = "N/A"
-        end_date = "N/A"
+        end_date   = "N/A"
     
-    return start_date, end_date, count, total
+    return start_date, end_date, cups, total
 
 def get_sales_details(start_datetime: str, end_datetime: str):
-    """Get sales breakdown by drink for a given date range."""
-    conn = sqlite3.connect('sales.db')
+    """Get sales breakdown by drink for a given date range.
+    Cups = only non-toppings, revenue = all.
+    """
+    conn = sqlite3.connect('/data/sales.db')
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT drink_name, COUNT(*), SUM(price)
+        SELECT 
+            drink_name,
+            SUM(CASE WHEN category != 'ท็อปปิ้ง / Toppings' THEN 1 ELSE 0 END) AS cups,
+            SUM(price) AS total_price
         FROM sales
         WHERE datetime >= ? AND datetime <= ?
         GROUP BY drink_name
-        ORDER BY SUM(price) DESC
+        ORDER BY total_price DESC
     ''', (start_datetime, end_datetime))
     
     results = cursor.fetchall()
